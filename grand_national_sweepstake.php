@@ -1,10 +1,10 @@
 <?php 
 
-$favs1 = array('Tiger Roll', 'Any Second Now', 'Burrows Saint', 'Definitly Red', 'Kimberlite Candy', 'Walk In The Mill');
+$favs1 = array('Burrows Saint', 'Magic Of Light', 'Any Second Now', 'Takingrisks', 'Cloth Cap', 'Minella Times');
 
-$favs2 = array('Magic Of Light', 'Potters Corner', 'Bristol De Mai', 'Elegant Escape', 'Anibale Fly', 'Total Recall');
+$favs2 = array('Kimberlite Candy', 'Mister Malarky', 'Discorama', 'Acapella Bourgeois', 'Potters Corner', 'Farclas');
 
-$remaining = array('Aso', 'Top Ville Ben', 'Beware The Bear', 'Peregrine Run', 'Jett', 'Alpha Des Obeaux', 'The Storyteller', 'Talkischeap', 'Yala Enki', 'Ballyoptic', 'Sub Lieutenant', 'Ok Corral', 'Tout Est Permis', 'Vintage Clouds', 'Crievehill', 'Lake View Lad', 'Jury Duty', 'Pleasant Company', 'Acapella Bourgeois', 'Shattered Love', 'Dounikos', 'Kildisart', 'Death Duty', 'Ramses De Teillee', 'Valtor', 'Saint Xavier', 'Warriors Tale', 'Double Shuffle');
+$remaining = array('Bristol De Mai', 'Chris\'s Dream', 'Yala Enki', 'Ballyoptic', 'Definitly Red', 'Lake View Lad', 'Talkischeap', 'Tout Est Permis', 'Anibale Fly', 'Balko Des Flos', 'Alpha Des Obeaux', 'OK Corral', 'Shattered Love', 'Jett', 'Lord Du Mesnil', 'Class Conti', 'Milan Native', 'Vieux Lion Rouge', 'Cabaret Queen', 'Minellacelebration', 'Canelo', 'The Long Mile', 'Give Me A Copper', 'Sub Lieutenant', 'Hogan\'s Height', 'Double Shuffle', 'Ami Desbois', 'Blaklion');
 
 $entries = array('Dad', 'Mum', 'Sibling 1', 'Sibling 2', 'Sibling 3', 'Sibling 4');
 
@@ -23,14 +23,41 @@ foreach ($entries as $entrant) {
 		unset($remaining[$ranremain]);
 	}
 	
+	//give the siblings the remaining horses
 	if ($entrant != "Dad" && $entrant != "Mum") {
 		$randomremaining2 = array_rand($remaining, 1);
 		$draw[$entrant][] = $remaining[$randomremaining2];
 		unset($remaining[$randomremaining2]);
+	} else {
+		$draw[$entrant][] = "";
 	}
 }
 
-print_r($draw);
-print_r($remaining);
+//transpose the data so it is formatted correctly for the csv file
+function transposeData($data) {
+  $retData = array();
+    foreach ($data as $row => $columns) {
+      foreach ($columns as $row2 => $column2) {
+       		$retData[$row2][$row] = $column2;
+      }
+    }
+	return $retData;
+}
+
+$data = transposeData($draw);
+//print_r($data);
+
+//output the data to a csv file
+$output = fopen("php://output",'w') or die("Can't open php://output");
+header("Content-Type:application/csv"); 
+header("Content-Disposition:attachment;filename=pressurecsv.csv"); 
+fputcsv($output, array_keys($draw));
+foreach($data as $row){
+	fputcsv($output, $row);
+}
+fclose($output) or die("Can't close php://output");
+
+//print_r($draw);
+//print_r($remaining);
 
 ?>
